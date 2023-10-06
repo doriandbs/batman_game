@@ -25,7 +25,41 @@ public class Partie {
         ennemis = new ArrayList<>();
         genererEnnemis(3);
         placerBatman();
+        int nbDeplacementsEstimes = estimerNombreDeplacements();
+        System.out.println("Nombre de déplacements estimés pour finir la partie: " + nbDeplacementsEstimes);
 
+    }
+
+    private int estimerNombreDeplacements() {
+        int totalDeplacements = 0;
+        Batman positionTemporaire = new Batman(batman.getX(), batman.getY());
+        List<Ennemi> ennemisRestants = new ArrayList<>(ennemis);
+
+        while (!ennemisRestants.isEmpty()) {
+            Ennemi ennemiProche = trouverEnnemiLePlusProcheDepuis(positionTemporaire, ennemisRestants);
+            totalDeplacements += distanceEntre(positionTemporaire, ennemiProche);
+
+            positionTemporaire.setX(ennemiProche.getX());
+            positionTemporaire.setY(ennemiProche.getY());
+
+            ennemisRestants.remove(ennemiProche);
+        }
+
+        return totalDeplacements;
+    }
+
+    private Ennemi trouverEnnemiLePlusProcheDepuis(Batman position, List<Ennemi> ennemisListe) {
+        Ennemi ennemiProche = null;
+        int distanceMin = Integer.MAX_VALUE;
+
+        for (Ennemi ennemi : ennemisListe) {
+            int distance = distanceEntre(position, ennemi);
+            if (distance < distanceMin) {
+                distanceMin = distance;
+                ennemiProche = ennemi;
+            }
+        }
+        return ennemiProche;
     }
 
     private void genererEnnemis(int nombreEnnemis) {
