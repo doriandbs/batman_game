@@ -11,5 +11,4 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Ennemi {
     private int x, y;
-
 }

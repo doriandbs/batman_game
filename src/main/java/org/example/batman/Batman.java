@@ -11,4 +11,19 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Batman {
     private int x, y;
+    public void deplacementHaut() {
+        x = x > 0 ? x-1 : x;
+    }
+
+    public void deplacementBas(int boardSize) {
+        x = x < boardSize-1 ? x+1 : x;
+    }
+
+    public void deplacementGauche() {
+        y = y > 0 ? y-1 : y;
+    }
+
+    public void deplacementDroit(int boardSize) {
+        y = y < boardSize-1 ? y+1 : y;
+    }
 }
