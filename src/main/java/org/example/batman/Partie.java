@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.lang.Math;
 import java.util.Random;
 
 @Getter
@@ -54,46 +55,62 @@ public class Partie {
 
         batman = new Batman(x, y);
     }
+    public void deplacerBatmanAutomatiquement() {
 
-    public void deplacerBatman(String direction) {
-        switch (direction) {
-            case "haut": batman.deplacementHaut(); break;
-            case "bas": batman.deplacementBas(plateau.getPlateau().length); break;
-            case "gauche": batman.deplacementGauche(); break;
-            case "droite": batman.deplacementDroit(plateau.getPlateau()[0].length); break;
+    Ennemi ennemiProche = trouverEnnemiLePlusProche();
+
+    int deltaX = batman.getX() - ennemiProche.getX();
+    int deltaY = batman.getY() - ennemiProche.getY();
+
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0) {
+            batman.deplacementHaut();
+        } else {
+            batman.deplacementBas(plateau.getPlateau().length);
         }
+    } else {
+        if (deltaY > 0) {
+            batman.deplacementGauche();
+        } else {
+            batman.deplacementDroit(plateau.getPlateau()[0].length);
+        }
+    }
 
-        Iterator<Ennemi> iterator = ennemis.iterator();
+    Iterator<Ennemi> iterator = ennemis.iterator();
         while (iterator.hasNext()) {
-            Ennemi ennemi = iterator.next();
-            if (ennemi.getX() == batman.getX() && ennemi.getY() == batman.getY()) {
-                iterator.remove();
-                plateau.getPlateau()[ennemi.getX()][ennemi.getY()] = 0;
-                System.out.println("Ennemi tué !");
-            }
+        Ennemi ennemi = iterator.next();
+        if (ennemi.getX() == batman.getX() && ennemi.getY() == batman.getY()) {
+            iterator.remove();
+            plateau.getPlateau()[ennemi.getX()][ennemi.getY()] = 0;
+            System.out.println("Ennemi tué !");
         }
     }
+}
 
-    public void afficherVisionBatman() {
-        int[][] plateauArray = plateau.getPlateau();
-        int x = batman.getX();
-        int y = batman.getY();
+    private Ennemi trouverEnnemiLePlusProche() {
+        Ennemi ennemiProche = null;
+        int distanceMin = Integer.MAX_VALUE;
 
-        System.out.println("Vision de Batman : ");
-        for (int i = 1; i <= 3; i++) {
-            int visionX = x;
-            int visionY = y + i;
-
-            if (visionY < plateauArray[0].length) {
-                String caseContent = plateauArray[visionX][visionY] == 1 ? "E" : "-";
-                System.out.println("Case " + i + ": " + caseContent);
-            } else {
-                System.out.println("Case " + i + ": hors du plateau");
+        for (Ennemi ennemi : ennemis) {
+            int distance = distanceEntre(batman, ennemi);
+            if (distance < distanceMin) {
+                distanceMin = distance;
+                ennemiProche = ennemi;
             }
         }
+        return ennemiProche;
     }
+
+    private int distanceEntre(Batman batman, Ennemi ennemi) {
+        return Math.abs(batman.getX() - ennemi.getX()) + Math.abs(batman.getY() - ennemi.getY());
+    }
+
+
     public void jouer() {
         plateau.afficher(batman);
     }
 
+    public boolean estTerminee() {
+        return ennemis.isEmpty();
+    }
 }
